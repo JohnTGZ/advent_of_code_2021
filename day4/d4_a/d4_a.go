@@ -1,10 +1,11 @@
 package main
 
 import (
-	"bufio"   //For reading line by line
-	"flag"    //For command line parsing
-	"fmt"     //Converts string into integers
-	"os"      //for opening filess
+	"bufio" //For reading line by line
+	"flag"  //For command line parsing
+	"fmt"   //Converts string into integers
+	"os"    //for opening filess
+	"strconv"
 	"strings" //Converts string into integers
 )
 
@@ -33,7 +34,7 @@ func check(e error) {
 
 /* Read the input into an iterable array
  */
-func getInput(filepath string) ([]string, int) {
+func getInput(filepath string) ([]string, int, int) {
 
 	f, err := os.Open(filepath)
 	check(err)
@@ -46,26 +47,35 @@ func getInput(filepath string) ([]string, int) {
 
 	var input_arr []string
 
-	num_boards := 0
+	num_lines := 0
 
 	//read file line by line
 	for scanner.Scan() {
 		text := scanner.Text()
-		//check if it is empty
-		if len(text) == 0 {
-			fmt.Printf("Empty line \n")
-		}
+
 		input_arr = append(input_arr, text)
+		num_lines++
 	}
 
-	return input_arr, num_boards
+	num_boards := (num_lines - 1) / 6
+
+	return input_arr, num_lines, num_boards
 }
 
 /*
 Function to iterate through arrays
 and print each entry
 */
-func printArr(str_arr []string) {
+func printArrInt(str_arr []int) {
+
+	for _, arr := range str_arr {
+		fmt.Printf("%d, ", arr)
+	}
+	fmt.Printf("\n")
+
+}
+
+func printArrStr(str_arr []string) {
 
 	for _, arr := range str_arr {
 		fmt.Printf("%s, ", arr)
@@ -74,31 +84,85 @@ func printArr(str_arr []string) {
 
 }
 
+type board_interface interface {
+	// getPos() int16
+	// fillNum() int16
+	printBoard()
+	addBoard()
+}
+
+type board struct {
+	idx     int
+	val_arr []int
+	width   int
+	height  int
+}
+
+func (b board) printBoard() {
+	fmt.Printf("===Printing board %d===", b.idx)
+
+	for i, val := range b.val_arr {
+		if i%b.width == 0 {
+			fmt.Printf("\n")
+		}
+		fmt.Printf("%d ", val)
+	}
+	fmt.Printf("\n")
+
+}
+
+//todo: convert array of str into array of int
+
 func main() {
 
 	input_file := procArg()
 
-	input_arr, _ := getInput(input_file)
-	// board_sz := 5
+	input_arr, num_lines, num_boards := getInput(input_file)
+
+	fmt.Printf("No. of boards: %d \n", num_boards)
+
+	//constant variables
+	board_width := 5
+	board_height := 5
 
 	//read first line and split into an array
-	draw_arr := strings.Split(input_arr[0], ",")
-	printArr(draw_arr)
+	// draw_num_arr := strings.Split(input_arr[0], ",")
+	// printArrStr(draw_num_arr)
 
-	//create array of boards
-	// var boards [num_boards][board_sz * board_sz]int
+	//line 0: numbers being drawn
+	// 	...
+	//line 1, 7, 13, 19: Empty line
+	// 	General formulat: 1+index*6
+	//line 2-6, 8-12, 14-18: board data
+	//	General formula: 2+index*6 -> 6*(index+1)
 
-	// //Iterate through remaining lines and save board info
-	// for i, line := range input_arr {
+	boards := make([]board, num_boards)
 
-	// }
+	current_board_idx := 0
+	var board_input []int
 
-	// o2_dec, _ := strconv.ParseInt(o2_bin, 2, 32)
-	// co2_dec, _ := strconv.ParseInt(co2_bin, 2, 32)
+	//iterate through all lines
+	for i := 2; i < num_lines+1; i++ {
+		if i == 7+6*(current_board_idx) {
+			//empty line
+			boards[current_board_idx] = board{idx: current_board_idx, val_arr: board_input, width: board_width, height: board_height}
+			board_input = nil
+			current_board_idx++
 
-	// fmt.Printf("o2_bin: %s, dec: %d \n", o2_bin, o2_dec)
-	// fmt.Printf("co2_bin: %s, dec: %d \n", co2_bin, co2_dec)
+		} else {
+			//get board data
+			for _, val := range strings.Fields(input_arr[i]) {
+				val_int, err := strconv.Atoi(val)
+				check(err)
+				board_input = append(board_input, val_int)
+			}
+		}
 
-	// fmt.Printf("answer: %d\n", o2_dec*co2_dec)
+	}
+
+	//print all boards
+	for _, current_board := range boards {
+		current_board.printBoard()
+	}
 
 }
