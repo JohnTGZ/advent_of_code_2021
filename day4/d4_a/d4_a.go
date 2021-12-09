@@ -85,17 +85,16 @@ func printArrStr(str_arr []string) {
 }
 
 type board_interface interface {
-	// getPos() int16
-	// fillNum() int16
+	fillNum()
 	printBoard()
-	addBoard()
 }
 
 type board struct {
-	idx     int
-	val_arr []int
-	width   int
-	height  int
+	idx        int
+	val_arr    []int
+	width      int
+	height     int
+	filled_pos []int //Positions that have been filled up
 }
 
 func (b board) printBoard() {
@@ -108,7 +107,51 @@ func (b board) printBoard() {
 		fmt.Printf("%d ", val)
 	}
 	fmt.Printf("\n")
+}
 
+/*
+Fill up the board with the number
+*/
+func (b board) fillNum(drawn_num int) {
+	//modify the val_arr[]int
+	//add position of value to filled_pos
+
+	for i, val := range b.val_arr {
+		if val == drawn_num {
+			fmt.Printf("i(%d), drawn(%d) \n", val, drawn_num)
+			(&b).filled_pos = append((&b).filled_pos, i)
+			(&b).val_arr[i] = 666
+		}
+
+	}
+
+}
+
+/*
+Fill up the board with the number
+*/
+// func (b board) checkBingo(drawn_num int) {
+// 	//modify the val_arr[]int
+// 	//add position of value to filled_pos
+
+// 	for i, val := range b.val_arr {
+// 		if val == drawn_num {
+// 			// fmt.Printf("val(%d), drawn(%d) \n", val, drawn_num)
+// 			(&b).filled_pos = append(b.filled_pos, i)
+// 			(&b).val_arr[i] = 666
+// 		}
+
+// 	}
+
+// }
+
+/*
+Search through mapping and fill up the relevant boards with the drawn number
+*/
+func drawNum(boards []board, board_map map[int][]int, drawn_num int) {
+	for _, board_idx := range board_map[drawn_num] {
+		boards[board_idx].fillNum(drawn_num)
+	}
 }
 
 //todo: convert array of str into array of int
@@ -126,8 +169,8 @@ func main() {
 	board_height := 5
 
 	//read first line and split into an array
-	// draw_num_arr := strings.Split(input_arr[0], ",")
-	// printArrStr(draw_num_arr)
+	draw_num_arr := strings.Split(input_arr[0], ",")
+	printArrStr(draw_num_arr)
 
 	//line 0: numbers being drawn
 	// 	...
@@ -136,7 +179,9 @@ func main() {
 	//line 2-6, 8-12, 14-18: board data
 	//	General formula: 2+index*6 -> 6*(index+1)
 
+	//initialize data structures
 	boards := make([]board, num_boards)
+	board_map := make(map[int][]int) //maps numbers to the boards they belong to
 
 	current_board_idx := 0
 	var board_input []int
@@ -144,13 +189,22 @@ func main() {
 	//iterate through all lines
 	for i := 2; i < num_lines+1; i++ {
 		if i == 7+6*(current_board_idx) {
-			//empty line
+			//Line: empty line
+
+			//Initialize board data
 			boards[current_board_idx] = board{idx: current_board_idx, val_arr: board_input, width: board_width, height: board_height}
+
+			//add to map
+			for _, input := range board_input {
+				board_map[input] = append(board_map[input], current_board_idx)
+			}
+
 			board_input = nil
 			current_board_idx++
 
 		} else {
-			//get board data
+			//Line: board data
+
 			for _, val := range strings.Fields(input_arr[i]) {
 				val_int, err := strconv.Atoi(val)
 				check(err)
@@ -160,9 +214,26 @@ func main() {
 
 	}
 
+	for _, drawn_num := range draw_num_arr {
+		drawn_num_int, _ := strconv.Atoi(drawn_num)
+		drawNum(boards, board_map, drawn_num_int)
+	}
+
 	//print all boards
+	fmt.Printf("Printing boards... \n ")
 	for _, current_board := range boards {
 		current_board.printBoard()
 	}
+	printArrInt(boards[0].filled_pos)
+
+	//print all mappings
+	// fmt.Printf("Printing mappings... \n ")
+	// for key, arr := range board_map {
+	// 	fmt.Printf("Number %d: \n", key)
+	// 	for _, val := range arr {
+	// 		fmt.Printf("%d, ", val)
+	// 	}
+	// 	fmt.Printf("\n ")
+	// }
 
 }
