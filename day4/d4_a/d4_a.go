@@ -66,22 +66,18 @@ func getInput(filepath string) ([]string, int, int) {
 Function to iterate through arrays
 and print each entry
 */
-func printArrInt(str_arr []int) {
-
-	for _, arr := range str_arr {
+func printArrInt(int_arr []int) {
+	for _, arr := range int_arr {
 		fmt.Printf("%d, ", arr)
 	}
 	fmt.Printf("\n")
-
 }
 
 func printArrStr(str_arr []string) {
-
 	for _, arr := range str_arr {
 		fmt.Printf("%s, ", arr)
 	}
 	fmt.Printf("\n")
-
 }
 
 type board_interface interface {
@@ -89,16 +85,28 @@ type board_interface interface {
 	printBoard()
 }
 
-type board struct {
-	idx        int
-	val_arr    []int
-	width      int
-	height     int
-	filled_pos []int //Positions that have been filled up
+type Board struct {
+	idx     int
+	val_arr []int //currently available values
+	width   int
+	height  int
+
+	rows [5][]int
+	cols [5][]int
 }
 
-func (b board) printBoard() {
-	fmt.Printf("===Printing board %d===", b.idx)
+func (b *Board) init(idx int, val_arr []int, width int, height int) {
+	b.idx = idx
+	b.val_arr = val_arr
+	b.width = width
+	b.height = height
+}
+
+/*
+Pretty print the board out in 2d presentation
+*/
+func (b *Board) printBoard() {
+	fmt.Printf("===Printing Board %d===", b.idx)
 
 	for i, val := range b.val_arr {
 		if i%b.width == 0 {
@@ -110,51 +118,65 @@ func (b board) printBoard() {
 }
 
 /*
-Fill up the board with the number
+Add to b.rows and b.cols which are used to check bingo
 */
-func (b board) fillNum(drawn_num int) {
-	//modify the val_arr[]int
-	//add position of value to filled_pos
+func (b *Board) addToRowColArr(position int) {
+	row_idx := int(position / b.width)
+	col_idx := int(position % b.height)
+	fmt.Printf("Col(%d), Horz(%d): drawn(%d) \n", col_idx, row_idx, position)
 
-	for i, val := range b.val_arr {
-		if val == drawn_num {
-			fmt.Printf("i(%d), drawn(%d) \n", val, drawn_num)
-			(&b).filled_pos = append((&b).filled_pos, i)
-			(&b).val_arr[i] = 666
-		}
-
-	}
-
+	b.rows[row_idx] = append(b.rows[row_idx], position)
+	b.cols[col_idx] = append(b.cols[col_idx], position)
 }
 
 /*
-Fill up the board with the number
+Fill up the Board with the number
 */
-// func (b board) checkBingo(drawn_num int) {
-// 	//modify the val_arr[]int
-// 	//add position of value to filled_pos
+func (b *Board) fillNum(drawn_num int) {
+	//modify the val_arr[]int
+	for i, val := range b.val_arr {
+		if val == drawn_num {
+			b.addToRowColArr(i)
+			b.val_arr[i] = -1
+		}
+	}
+}
 
-// 	for i, val := range b.val_arr {
-// 		if val == drawn_num {
-// 			// fmt.Printf("val(%d), drawn(%d) \n", val, drawn_num)
-// 			(&b).filled_pos = append(b.filled_pos, i)
-// 			(&b).val_arr[i] = 666
-// 		}
-
-// 	}
-
-// }
+/*
+Check if board has bingoed
+*/
+func (b *Board) checkBingo() bool {
+	//check horizontal row
+	for _, horz_arr := range b.rows {
+		if len(horz_arr) >= b.width {
+			return true
+		}
+	}
+	//check vertical row
+	for _, col_arr := range b.cols {
+		if len(col_arr) >= b.height {
+			return true
+		}
+	}
+	return false
+}
 
 /*
 Search through mapping and fill up the relevant boards with the drawn number
 */
-func drawNum(boards []board, board_map map[int][]int, drawn_num int) {
+func drawNum(boards []Board, board_map map[int][]int, drawn_num int) (bool, int) {
+	bingo_idx := -1
+	//for each board with the drawn number, fill it in
 	for _, board_idx := range board_map[drawn_num] {
 		boards[board_idx].fillNum(drawn_num)
+		if boards[board_idx].checkBingo() {
+			bingo_idx = board_idx
+			return true, bingo_idx
+		}
 	}
-}
 
-//todo: convert array of str into array of int
+	return false, bingo_idx
+}
 
 func main() {
 
@@ -176,11 +198,11 @@ func main() {
 	// 	...
 	//line 1, 7, 13, 19: Empty line
 	// 	General formulat: 1+index*6
-	//line 2-6, 8-12, 14-18: board data
+	//line 2-6, 8-12, 14-18: Board data
 	//	General formula: 2+index*6 -> 6*(index+1)
 
 	//initialize data structures
-	boards := make([]board, num_boards)
+	boards := make([]Board, num_boards)
 	board_map := make(map[int][]int) //maps numbers to the boards they belong to
 
 	current_board_idx := 0
@@ -191,8 +213,8 @@ func main() {
 		if i == 7+6*(current_board_idx) {
 			//Line: empty line
 
-			//Initialize board data
-			boards[current_board_idx] = board{idx: current_board_idx, val_arr: board_input, width: board_width, height: board_height}
+			//Initialize Board data
+			boards[current_board_idx].init(current_board_idx, board_input, board_width, board_height)
 
 			//add to map
 			for _, input := range board_input {
@@ -203,7 +225,7 @@ func main() {
 			current_board_idx++
 
 		} else {
-			//Line: board data
+			//Line: Board data
 
 			for _, val := range strings.Fields(input_arr[i]) {
 				val_int, err := strconv.Atoi(val)
@@ -214,26 +236,30 @@ func main() {
 
 	}
 
+	//draw the numbers and fill in the boards
 	for _, drawn_num := range draw_num_arr {
 		drawn_num_int, _ := strconv.Atoi(drawn_num)
-		drawNum(boards, board_map, drawn_num_int)
+
+		bingo, winning_board_idx := drawNum(boards, board_map, drawn_num_int)
+
+		if bingo {
+			sum_of_remaining_num := 0
+			for _, val := range boards[winning_board_idx].val_arr {
+				if val != -1 {
+					sum_of_remaining_num += val
+				}
+			}
+			fmt.Printf("Bingo! Board %d won at drawn number: %d \n", winning_board_idx, drawn_num_int)
+			fmt.Printf("Sum of remaining num: %d \n", sum_of_remaining_num)
+			fmt.Printf("Answer: %d \n", sum_of_remaining_num*drawn_num_int)
+			break
+		}
 	}
 
-	//print all boards
-	fmt.Printf("Printing boards... \n ")
-	for _, current_board := range boards {
-		current_board.printBoard()
-	}
-	printArrInt(boards[0].filled_pos)
-
-	//print all mappings
-	// fmt.Printf("Printing mappings... \n ")
-	// for key, arr := range board_map {
-	// 	fmt.Printf("Number %d: \n", key)
-	// 	for _, val := range arr {
-	// 		fmt.Printf("%d, ", val)
-	// 	}
-	// 	fmt.Printf("\n ")
+	//print boards
+	// fmt.Printf("Printing boards... \n ")
+	// for _, current_board := range boards {
+	// 	current_board.printBoard()
 	// }
 
 }
