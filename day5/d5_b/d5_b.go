@@ -82,11 +82,11 @@ func getInput(filepath string) ([][]int, int, int) {
 
 		xy_pos := []int{x1, y1, x2, y2, dx, dy}
 
-		if Abs(dx) > 0 && Abs(dy) > 0 {
-			fmt.Printf("Not diagonal: %d,%d -> %d, %d \n", x1, y1, x2, y2)
-		} else {
-			coordinate_arr = append(coordinate_arr, xy_pos)
-		}
+		// if Abs(dx) > 0 && Abs(dy) > 0 {
+		// 	// fmt.Printf("Not diagonal: %d,%d -> %d, %d \n", x1, y1, x2, y2)
+		// } else {
+		coordinate_arr = append(coordinate_arr, xy_pos)
+		// }
 	}
 
 	return coordinate_arr, max_width + 1, max_height + 1
@@ -166,23 +166,18 @@ func lineVentUp(vents_arr []int, coords []int, max_width int) {
 	vents_arr[idx]++
 
 	for {
+		inc_x := int(math.Copysign(float64(1), float64(dx)))
+		inc_y := int(math.Copysign(float64(1), float64(dy)))
 
-		//stepping through
-		if dy == 0 {
-			if dx > 0 {
-				x++
-
-			} else {
-				x--
-			}
-
-		} else {
-			if dy > 0 {
-				y++
-			} else {
-				y--
-			}
+		if dx == 0 {
+			inc_x = 0
 		}
+		if dy == 0 {
+			inc_y = 0
+		}
+
+		x += inc_x
+		y += inc_y
 
 		//fill up array
 		idx := get1DIdx(x, y, max_width)
