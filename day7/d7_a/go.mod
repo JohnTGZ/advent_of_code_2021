@@ -1,4 +1,4 @@
-module aoc/d6_a
+module aoc/d7_a
 
 go 1.16
 

@@ -5,8 +5,6 @@ import (
 	"bufio" //For reading line by line
 	"flag"  //For command line parsing
 	"fmt"
-
-	//Converts string into integers
 	"os" //for opening filess
 	"strings"
 )

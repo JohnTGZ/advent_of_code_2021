@@ -5,8 +5,6 @@ import (
 	"bufio" //For reading line by line
 	"flag"  //For command line parsing
 	"fmt"
-
-	//Converts string into integers
 	"os" //for opening filess
 	"strings"
 )
@@ -54,24 +52,19 @@ func getInput(filepath string) []int {
 Step through the lantern fish reproduction
 1 day at a time
 */
-func stepThrough(num_arr []int) []int {
-	next_day_num_arr := num_arr
+func stepThrough(fish_map []int) {
 
-	// fmt.Printf("Size of arr: %d \n", len(next_day_num_arr))
-	for i, _ := range num_arr {
-		next_day_num_arr[i] -= 1
-
-		//Time to poop babies
-		if next_day_num_arr[i] < 0 {
-			next_day_num_arr[i] = 6
-			//add new baby
-			next_day_num_arr = append(next_day_num_arr, 8)
-			// fmt.Printf("Size after append: %d \n", len(next_day_num_arr))
-		}
-
+	num_fishes_gonna_reborn := fish_map[0]
+	//move number of fishes one index down
+	for i := 0; i < 8; i++ {
+		// fmt.Printf("iteration: %d(%d) <- %d(%d) \n", i, fish_map[i], i+1, fish_map[i+1])
+		fish_map[i] = fish_map[i+1]
 	}
 
-	return next_day_num_arr
+	//fish are reborn
+	fish_map[6] += num_fishes_gonna_reborn
+	//new fish are pooped out
+	fish_map[8] = num_fishes_gonna_reborn
 }
 
 func main() {
@@ -80,14 +73,22 @@ func main() {
 
 	num_arr := getInput(input_file)
 
-	//step through 1 day at a time
-	for i := 0; i < 80; i++ {
-		// fmt.Printf("Iteration %d", i)
-		num_arr = stepThrough(num_arr)
-		// aoc.PrintArrInt(num_arr)
+	//create mapping of remaining linespan to number of fishes
+	lifespan_to_fishes_map := make([]int, 9)
+
+	//iterate through the range of lifespan values
+	for _, val := range num_arr {
+		lifespan_to_fishes_map[val] += 1
 	}
 
-	// fmt.Printf("Sum of lanternfishes: %d \n", aoc.GetSum(num_arr))
-	fmt.Printf("Sum of lanternfishes: %d \n", len(num_arr))
+	//step through 1 day at a time
+	for i := 0; i < 256; i++ {
+		// fmt.Printf("Iteration %d \n", i)
+		stepThrough(lifespan_to_fishes_map)
+		// aoc.PrintArrInt(lifespan_to_fishes_map)
+
+	}
+
+	fmt.Printf("Sum of lanternfishes: %d \n", aoc.GetSum(lifespan_to_fishes_map))
 
 }
