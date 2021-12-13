@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc/aoc_lib"
 	"bufio" //For reading line by line
 	"flag"  //For command line parsing
 	"fmt"   //Converts string into integers
@@ -8,7 +9,6 @@ import (
 	"os" //for opening filess
 	"strconv"
 	"strings"
-	//Converts string into integers
 )
 
 /* Process command line arguemnts to read from either
@@ -26,20 +26,12 @@ func procArg() string {
 	return input_file
 }
 
-/* Checks error and PANIK!!
- */
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 /* Read the input into an iterable array
  */
 func getInput(filepath string) ([][]int, int, int) {
 
 	f, err := os.Open(filepath)
-	check(err)
+	aoc_lib.check(err)
 
 	//close file at end of program
 	defer f.Close()
@@ -82,7 +74,7 @@ func getInput(filepath string) ([][]int, int, int) {
 
 		xy_pos := []int{x1, y1, x2, y2, dx, dy}
 
-		if Abs(dx) > 0 && Abs(dy) > 0 {
+		if aoc_lib.Abs(dx) > 0 && aoc_lib.Abs(dy) > 0 {
 			fmt.Printf("Not diagonal: %d,%d -> %d, %d \n", x1, y1, x2, y2)
 		} else {
 			coordinate_arr = append(coordinate_arr, xy_pos)
@@ -90,40 +82,6 @@ func getInput(filepath string) ([][]int, int, int) {
 	}
 
 	return coordinate_arr, max_width + 1, max_height + 1
-}
-
-/*
-Function to iterate through arrays
-and print each entry
-*/
-func printArrInt(int_arr []int) {
-	for _, arr := range int_arr {
-		fmt.Printf("%d, ", arr)
-	}
-	fmt.Printf("\n")
-}
-
-func printArrStr(str_arr []string) {
-	for _, arr := range str_arr {
-		fmt.Printf("%s, ", arr)
-	}
-	fmt.Printf("\n")
-}
-
-func intInSlice(des_val int, int_arr []int) bool {
-	for _, val := range int_arr {
-		if val == des_val {
-			return true
-		}
-	}
-	return false
-}
-
-func Abs(val int) int {
-	if val < 0 {
-		return -val
-	}
-	return val
 }
 
 /*
