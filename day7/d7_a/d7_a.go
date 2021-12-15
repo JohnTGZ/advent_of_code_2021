@@ -6,6 +6,7 @@ import (
 	"flag"  //For command line parsing
 	"fmt"
 	"os" //for opening filess
+	"sort"
 	"strings"
 )
 
@@ -45,31 +46,22 @@ func getInput(filepath string) []int {
 	var num_arr []int
 	num_arr = aoc.ConvArrStrToInt(num_arr_str)
 
+	//sort in ascending order
+	sort.Ints(num_arr)
+
 	return num_arr
 }
 
-/*
-Step through the lantern fish reproduction
-1 day at a time
-*/
-func stepThrough(num_arr []int) []int {
-	next_day_num_arr := num_arr
-
-	// fmt.Printf("Size of arr: %d \n", len(next_day_num_arr))
-	for i, _ := range num_arr {
-		next_day_num_arr[i] -= 1
-
-		//Time to poop babies
-		if next_day_num_arr[i] < 0 {
-			next_day_num_arr[i] = 6
-			//add new baby
-			next_day_num_arr = append(next_day_num_arr, 8)
-			// fmt.Printf("Size after append: %d \n", len(next_day_num_arr))
+func getFuelUsage(num_arr []int, des_pos int) int {
+	total_fuel := 0
+	for _, val := range num_arr {
+		if val <= des_pos {
+			total_fuel += des_pos - val
+		} else {
+			total_fuel += val - des_pos
 		}
-
 	}
-
-	return next_day_num_arr
+	return total_fuel
 }
 
 func main() {
@@ -78,14 +70,10 @@ func main() {
 
 	num_arr := getInput(input_file)
 
-	//step through 1 day at a time
-	for i := 0; i < 80; i++ {
-		// fmt.Printf("Iteration %d", i)
-		num_arr = stepThrough(num_arr)
-		// aoc.PrintArrInt(num_arr)
-	}
+	median := aoc.GetMedian(num_arr)
 
-	// fmt.Printf("Sum of lanternfishes: %d \n", aoc.GetSum(num_arr))
-	fmt.Printf("Sum of lanternfishes: %d \n", len(num_arr))
+	fmt.Printf("Median: %d \n", median)
+
+	fmt.Printf("Total fuel usage: %d \n", getFuelUsage(num_arr, median))
 
 }

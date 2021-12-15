@@ -6,6 +6,7 @@ import (
 	"flag"  //For command line parsing
 	"fmt"
 	"os" //for opening filess
+	"sort"
 	"strings"
 )
 
@@ -45,26 +46,22 @@ func getInput(filepath string) []int {
 	var num_arr []int
 	num_arr = aoc.ConvArrStrToInt(num_arr_str)
 
+	//sort in ascending order
+	sort.Ints(num_arr)
+
 	return num_arr
 }
 
-/*
-Step through the lantern fish reproduction
-1 day at a time
-*/
-func stepThrough(fish_map []int) {
-
-	num_fishes_gonna_reborn := fish_map[0]
-	//move number of fishes one index down
-	for i := 0; i < 8; i++ {
-		// fmt.Printf("iteration: %d(%d) <- %d(%d) \n", i, fish_map[i], i+1, fish_map[i+1])
-		fish_map[i] = fish_map[i+1]
+func getFuelUsage(num_arr []int, des_pos int) int {
+	total_fuel := 0
+	for _, val := range num_arr {
+		if val <= des_pos {
+			total_fuel += des_pos - val
+		} else {
+			total_fuel += val - des_pos
+		}
 	}
-
-	//fish are reborn
-	fish_map[6] += num_fishes_gonna_reborn
-	//new fish are pooped out
-	fish_map[8] = num_fishes_gonna_reborn
+	return total_fuel
 }
 
 func main() {
@@ -73,22 +70,10 @@ func main() {
 
 	num_arr := getInput(input_file)
 
-	//create mapping of remaining linespan to number of fishes
-	lifespan_to_fishes_map := make([]int, 9)
+	median := aoc.GetMedian(num_arr)
 
-	//iterate through the range of lifespan values
-	for _, val := range num_arr {
-		lifespan_to_fishes_map[val] += 1
-	}
+	fmt.Printf("Median: %d \n", median)
 
-	//step through 1 day at a time
-	for i := 0; i < 256; i++ {
-		// fmt.Printf("Iteration %d \n", i)
-		stepThrough(lifespan_to_fishes_map)
-		// aoc.PrintArrInt(lifespan_to_fishes_map)
-
-	}
-
-	fmt.Printf("Sum of lanternfishes: %d \n", aoc.GetSum(lifespan_to_fishes_map))
+	fmt.Printf("Total fuel usage: %d \n", getFuelUsage(num_arr, median))
 
 }

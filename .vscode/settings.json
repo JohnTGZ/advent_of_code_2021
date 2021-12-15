@@ -1,3 +1,4 @@
 {
-    "go.vetOnSave" : "off"
+    "go.vetOnSave": "off",
+    "ros.distro": "noetic"
 }

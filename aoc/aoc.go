@@ -6,6 +6,7 @@ Package containing helper functions used for AOC 2021
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 )
 
@@ -79,6 +80,26 @@ func GetSum(int_arr []int) int {
 		sum += val
 	}
 	return sum
+}
+
+func GetMedian(int_arr []int) int {
+	arr_size := len(int_arr)
+	var median int
+
+	if arr_size <= 0 {
+		fmt.Printf("Empty array")
+		return -1
+	}
+
+	if arr_size%2 == 0 {
+		median_1 := int_arr[arr_size/2-1]
+		median_2 := int_arr[arr_size/2]
+		median = (median_1 + median_2) / 2
+	} else {
+		median = int_arr[int(math.Ceil(float64(arr_size)/2.0))]
+	}
+
+	return median
 }
 
 /*
