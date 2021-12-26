@@ -119,3 +119,17 @@ func CheckErr(e error) {
 		panic(e)
 	}
 }
+
+/*
+*Gets the consecutive sum of the difference between a start and end integer
+ */
+func ConsecutiveSum(start_val int, end_val int) int {
+	consecutive_sum := 0
+	difference := Abs(end_val - start_val)
+
+	for i := 1; i < difference+1; i++ {
+		consecutive_sum += i
+	}
+
+	return consecutive_sum
+}

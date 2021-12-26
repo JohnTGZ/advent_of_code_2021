@@ -5,6 +5,7 @@ import (
 	"bufio" //For reading line by line
 	"flag"  //For command line parsing
 	"fmt"
+	"math"
 	"os" //for opening filess
 	"sort"
 	"strings"
@@ -46,20 +47,13 @@ func getInput(filepath string) []int {
 	var num_arr []int
 	num_arr = aoc.ConvArrStrToInt(num_arr_str)
 
-	//sort in ascending order
-	sort.Ints(num_arr)
-
 	return num_arr
 }
 
 func getFuelUsage(num_arr []int, des_pos int) int {
 	total_fuel := 0
 	for _, val := range num_arr {
-		if val <= des_pos {
-			total_fuel += des_pos - val
-		} else {
-			total_fuel += val - des_pos
-		}
+		total_fuel += aoc.ConsecutiveSum(val, des_pos)
 	}
 	return total_fuel
 }
@@ -70,10 +64,33 @@ func main() {
 
 	num_arr := getInput(input_file)
 
-	median := aoc.GetMedian(num_arr)
+	//sort in ascending order
+	sort.Ints(num_arr)
 
-	fmt.Printf("Median: %d \n", median)
+	min_fuel_usage := math.MaxInt64
+	most_efficient_pos := -1
 
-	fmt.Printf("Total fuel usage: %d \n", getFuelUsage(num_arr, median))
+	//Brute force method
+	for i := 1; i < num_arr[len(num_arr)-1]; i++ {
+		fuel_used := getFuelUsage(num_arr, i)
+		//get the minimum fuel used at each position
+		if fuel_used < min_fuel_usage {
+			min_fuel_usage = fuel_used
+			most_efficient_pos = i
+		}
+		fmt.Printf("Position %d: Total fuel usage is %d \n", i, fuel_used)
+	}
+
+	// for i, val := range num_arr {
+	// 	fuel_used := getFuelUsage(num_arr, val)
+	// 	//get the minimum fuel used at each position
+	// 	if fuel_used < min_fuel_usage {
+	// 		min_fuel_usage = fuel_used
+	// 		most_efficient_pos = val
+	// 	}
+	// 	fmt.Printf("Itr %d: Total fuel usage is %d \n", i, fuel_used)
+	// }
+
+	fmt.Printf("Minimum fuel %d used at %d \n", min_fuel_usage, most_efficient_pos)
 
 }
