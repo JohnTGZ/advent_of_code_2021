@@ -53,18 +53,6 @@ func getInput(filepath string) ([]string, []string) {
 	return unique_signal_patterns, digital_output_val
 }
 
-func getFuelUsage(num_arr []int, des_pos int) int {
-	total_fuel := 0
-	for _, val := range num_arr {
-		if val <= des_pos {
-			total_fuel += des_pos - val
-		} else {
-			total_fuel += val - des_pos
-		}
-	}
-	return total_fuel
-}
-
 func main() {
 
 	input_file := procArg()

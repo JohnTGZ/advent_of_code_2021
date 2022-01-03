@@ -133,3 +133,32 @@ func ConsecutiveSum(start_val int, end_val int) int {
 
 	return consecutive_sum
 }
+
+func BubbleSortRunes(runes []rune) string {
+	for i := 0; i < len(runes); i++ {
+		for j := 0; j < len(runes)-i-1; j++ {
+			if runes[j] > runes[j+1] {
+				runes[j], runes[j+1] = runes[j+1], runes[j]
+			}
+		}
+	}
+	return string(runes)
+}
+
+/*
+Convert from 2 Dimensional (x,y) to 1D index
+*/
+func XYToIdx(x int, y int, width int) int {
+	return y*width + x
+}
+
+/*
+Convert from 1D Idx to  2 Dimensional (x,y) index
+*/
+func IdxToXY(idx int, width int) (int, int) {
+
+	y := int(math.Floor(float64(idx / width)))
+	x := idx % width
+
+	return x, y
+}

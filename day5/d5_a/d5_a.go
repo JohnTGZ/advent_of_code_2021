@@ -127,14 +127,14 @@ func Abs(val int) int {
 }
 
 /*
-Convert from 2D Idx to 1d Idx
+Convert from 2 Dimensional (x,y) to 1D index
 */
 func get1DIdx(x int, y int, width int) int {
 	return y*width + x
 }
 
 /*
-Convert from 2D Idx to 1d Idx
+Convert from 1D Idx to  2 Dimensional (x,y) index
 */
 func get2DIdx(idx int, width int) (int, int) {
 
