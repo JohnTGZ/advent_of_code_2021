@@ -1,8 +1,7 @@
-package aoc
-
 /*
 Package containing helper functions used for AOC 2021
 */
+package aoc
 
 import (
 	"fmt"
@@ -16,9 +15,12 @@ and print each entry
 */
 func PrintArrInt(int_arr []int) {
 	fmt.Printf("\n")
-	for _, val := range int_arr {
+	fmt.Printf("Printing int array: \n")
+	fmt.Printf("[")
+	for _, val := range int_arr[:len(int_arr)-1] {
 		fmt.Printf("%d, ", val)
 	}
+	fmt.Printf("%d]", int_arr[len(int_arr)-1])
 	fmt.Printf("\n")
 }
 
@@ -28,9 +30,12 @@ and print each entry
 */
 func PrintArrStr(str_arr []string) {
 	fmt.Printf("\n")
-	for _, val := range str_arr {
+	fmt.Printf("Printing string array: \n")
+	fmt.Printf("[")
+	for _, val := range str_arr[:len(str_arr)-1] {
 		fmt.Printf("%s, ", val)
 	}
+	fmt.Printf("%s]", str_arr[len(str_arr)-1])
 	fmt.Printf("\n")
 }
 
