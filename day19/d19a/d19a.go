@@ -34,8 +34,8 @@ var (
 )
 
 type scanner struct {
-	orientation        int
-	beacon_coordinates [][]int
+	rot_mat            [3][3]int //rotation matrix
+	beacon_coordinates [][]int   //beacon coordinates
 }
 
 /* Read the input into an iterable array
@@ -75,13 +75,13 @@ type scanner struct {
 // }
 
 func main() {
-	orientation := [3][3]int{
+	rot_mat := [3][3]int{
 		{1, 0, 0},
 		{0, 1, 0},
 		{0, 0, 1},
 	}
 
-	orientation = [3][3]int{
+	rot_mat = [3][3]int{
 		{1, 0, 0},
 		{0, 0, 0},
 		{0, 0, 0},
@@ -89,16 +89,16 @@ func main() {
 	//About X axis
 	fmt.Printf("About X axis \n")
 	for _, val := range fixed_ori_val {
-		orientation[1][1] = int(math.Cos(val))
-		orientation[1][2] = int(-math.Sin(val))
-		orientation[2][1] = int(math.Sin(val))
-		orientation[2][2] = int(math.Cos(val))
+		rot_mat[1][1] = int(math.Cos(val))
+		rot_mat[1][2] = int(-math.Sin(val))
+		rot_mat[2][1] = int(math.Sin(val))
+		rot_mat[2][2] = int(math.Cos(val))
 
 		fmt.Printf("Rotation: %f: \n", val)
-		fmt.Print("  ", orientation, "\n")
+		fmt.Print("  ", rot_mat, "\n")
 	}
 
-	orientation = [3][3]int{
+	rot_mat = [3][3]int{
 		{0, 0, 0},
 		{0, 1, 0},
 		{0, 0, 0},
@@ -107,16 +107,16 @@ func main() {
 	fmt.Printf("About Y axis \n")
 	//About Y axis
 	for _, val := range fixed_ori_val {
-		orientation[0][0] = int(math.Cos(val))
-		orientation[0][2] = int(math.Sin(val))
-		orientation[2][0] = int(-math.Sin(val))
-		orientation[2][2] = int(math.Cos(val))
+		rot_mat[0][0] = int(math.Cos(val))
+		rot_mat[0][2] = int(math.Sin(val))
+		rot_mat[2][0] = int(-math.Sin(val))
+		rot_mat[2][2] = int(math.Cos(val))
 
 		fmt.Printf("Rotation: %f: \n", val)
-		fmt.Print("  ", orientation, "\n")
+		fmt.Print("  ", rot_mat, "\n")
 	}
 
-	orientation = [3][3]int{
+	rot_mat = [3][3]int{
 		{0, 0, 0},
 		{0, 0, 0},
 		{0, 0, 1},
@@ -124,13 +124,13 @@ func main() {
 	fmt.Printf("About Z axis \n")
 	//About Z axis
 	for _, val := range fixed_ori_val {
-		orientation[0][0] = int(math.Cos(val))
-		orientation[0][1] = int(-math.Sin(val))
-		orientation[1][0] = int(math.Sin(val))
-		orientation[1][1] = int(math.Cos(val))
+		rot_mat[0][0] = int(math.Cos(val))
+		rot_mat[0][1] = int(-math.Sin(val))
+		rot_mat[1][0] = int(math.Sin(val))
+		rot_mat[1][1] = int(math.Cos(val))
 
 		fmt.Printf("Rotation: %f: \n", val)
-		fmt.Print("  ", orientation, "\n")
+		fmt.Print("  ", rot_mat, "\n")
 	}
 
 }

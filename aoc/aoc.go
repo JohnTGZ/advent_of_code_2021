@@ -76,6 +76,18 @@ func IntInSlice(des_val int, int_arr []int) bool {
 	return false
 }
 
+//Find and delete a value within an integer array
+func FindAndDelete(arr []int, val_to_be_removed int) []int {
+	idx := 0
+	for _, val := range arr {
+		if val != val_to_be_removed {
+			arr[idx] = val
+			idx++
+		}
+	}
+	return arr[:idx]
+}
+
 /*
 Get the sum of all elements in an array
 */
